@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.OrdersDao">
+
+    <resultMap id="ordersMap" type="orders">
+        <id property="id" column="id" />
+             <result property="orderNum" column="orderNum"/>
+        <result property="orderTime" column="orderTime"/>
+        <result property="orderStatus" column="orderStatus"/>
+        <result property="payType" column="payType"/>
+        <result property="orderDesc" column="orderDesc"/>
+
+        <!--查询产品的信息
+            一对一用association，javaType
+            一对多用connection,ofType
+
+        -->
+        <association property="product" column="productId" javaType="product"
+                     select="com.itheima.dao.ProductDao.findProductById" fetchType="lazy"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="ordersMap">
+        SELECT * FROM orders
+    </select>
+
+
+    <!--aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-->
+    <resultMap id="orderDetailMap" type="orders">
+        <id property="id" column="id" />
+        <result property="orderNum" column="orderNum"/>
+        <result property="orderTime" column="orderTime"/>
+        <result property="peopleCount" column="peopleCount"/>
+        <result property="orderStatus" column="orderStatus"/>
+        <result property="payType" column="payType"/>
+        <result property="orderDesc" column="orderDesc"/>
+        <!--商品表，一对一-->
+        <association property="product" column="productId" javaType="product"
+                     select="com.itheima.dao.ProductDao.findProductById" fetchType="lazy"/>
+        <!--会员表，一对一-->
+        <association property="member" column="memberId" javaType="member"
+                     select="com.itheima.dao.MemberDao.findMemberById" fetchType="lazy"/>
+        <!--游客表，一对多-->
+        <collection property="travellers" column="id" ofType="traveller"
+                    select="com.itheima.dao.TravellerDao.findTravellerByOrderId"/>
+    </resultMap>
+
+    <!--根据id查询订单详情-->
+    <select id="findOrdersById" parameterType="String" resultMap="orderDetailMap">
+        SELECT * FROM orders WHERE id = #{id}
+    </select>
+
+    <!--删除中间表的外键-->
+    <delete id="deleteMidTableById" parameterType="string" >
+        DELETE FROM order_traveller WHERE orderId = #{id}
+    </delete>
+
+    <!--再根据id删除主表的订单-->
+    <delete id="deleteOrderById" parameterType="string">
+        DELETE FROM orders WHERE id = #{id}
+    </delete>
+
+    <!--修改订单-->
+    <update id="updateOrder" parameterType="orders">
+        UPDATE orders SET payType=#{payType},orderStatus=#{orderStatus} WHERE id = #{id}
+    </update>
+
+</mapper>

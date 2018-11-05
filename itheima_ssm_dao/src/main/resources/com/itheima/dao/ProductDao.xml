@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.ProductDao">
+    <!--不分页查找所有-->
+    <select id="findAll" resultType="product">
+        SELECT * FROM product
+    </select>
+
+    <!--添加产品-->
+    <insert id="saveProduct" parameterType="product">
+        insert into product values(#{id},#{productNum},#{productName},#{cityName},#{departureTime},#{productPrice},#{productDesc},#{productStatus})
+    </insert>
+    
+    <!--根据id删除-->
+    <delete id="deleteById" parameterType="String">
+        DELETE FROM product where id = #{id}
+    </delete>
+
+    <!--根据id查询-->
+    <select id="findProductById" parameterType="String" resultType="product">
+        SELECT * FROM product where id = #{id}
+    </select>
+
+    <!--修改状态为开启-->
+    <select id="updateStatus" parameterType="product">
+        UPDATE product set productStatus = #{productStatus} WHERE id = #{id}
+    </select>
+
+    <!--修改状态为关闭-->
+    <select id="updateStatusToClose" parameterType="product">
+        UPDATE product set productStatus = #{productStatus} WHERE id = #{id}
+    </select>
+
+    <!--修改产品信息-->
+    <update id="updateProduct" parameterType="product">
+        UPDATE product set productNum=#{productNum},productName=#{productName},
+         cityName=#{cityName},departureTime=#{departureTime},productPrice=#{productPrice},
+         productDesc=#{productDesc},productStatus=#{productStatus} WHERE id = #{id}
+    </update>
+
+    <!--模糊查询-->
+    <select id="findProductByName" parameterType="String" resultType="product">
+                                                        /*使用字符串拼接可防止sql注入*/
+        SELECT * FROM product WHERE productName LIKE CONCAT(CONCAT('%',#{name}),'%')
+    </select>
+
+
+
+</mapper>

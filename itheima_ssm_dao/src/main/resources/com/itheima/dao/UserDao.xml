@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.UserDao">
+
+    <resultMap id="userMap" type="userInfo">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="phoneNum" column="phoneNum"/>
+        <result property="status" column="status"/>
+        <collection property="roles" column="id" ofType="role" select="com.itheima.dao.RoleDao.findRoleByUserId"/>
+    </resultMap>
+
+    <select id="findByUsername" parameterType="String" resultMap="userMap">
+        SELECT * FROM users where username = #{username}
+    </select>
+
+    <!--查询所有用户-->
+    <select id="findAllUser" resultType="userInfo">
+        SELECT * FROM users
+    </select>
+
+    <select id="findUserByIdAndAllRole" parameterType="String" resultMap="userMap">
+        select * from USERS where id = #{id}
+    </select>
+
+    <!--添加用户-->
+    <insert id="saveUser" parameterType="userInfo">
+        INSERT INTO users(username,email,password,phoneNum,status)
+         VALUES (#{username},#{email},#{password},#{phoneNum},#{status})
+    </insert>
+
+
+    <resultMap id="userDetailMap" type="userInfo">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="phoneNum" column="phoneNum"/>
+        <result property="status" column="status"/>
+        <collection property="roles" column="id" ofType="role" select="com.itheima.dao.RoleDao.findRoleByUserId"/>
+    </resultMap>
+
+    <!--根据用户id查询详情-->
+    <select id="findUserById" parameterType="string" resultMap="userDetailMap">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+    <!--根据用户Id删除User-->
+    <delete id="delUserById" parameterType="String">
+        delete from users where id = #{id}
+    </delete>
+
+    <!--updateUser-->
+    <update id="updateUser" parameterType="userInfo">
+        update USERS set username = #{username},EMAIL = #{email},password = #{password},
+        phoneNum = #{phoneNum},status = #{status}
+        where id = #{id}
+    </update>
+</mapper>

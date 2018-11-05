@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.RoleDao">
+
+    <resultMap id="roleMap" type="role">
+        <id property="id" column="id"/>
+        <result property="roleName" column="roleName"/>
+        <result property="roleDesc" column="roleDesc"/>
+        <collection property="permissions" column="id" ofType="permission"
+                    select="com.itheima.dao.PermissionDao.findPermissionByRoleId"/>
+    </resultMap>
+
+    <!--根据userid查询角色和旗下资源权限-->
+    <select id="findRoleByUserId" resultMap="roleMap" parameterType="String">
+        SELECT * FROM role WHERE id IN (SELECT roleId FROM users_role WHERE userId=#{userId})
+    </select>
+
+    <!--查询所有-->
+    <select id="findAll" resultType="role">
+        SELECT * FROM role
+    </select>
+
+    <!--查询一个-->
+    <select id="findById" parameterType="String" resultMap="roleMap">
+        SELECT * FROM role where  ID = #{id}
+    </select>
+
+    <!--save-->
+    <insert id="save" parameterType="role">
+        insert into ROLE (ROLENAME, ROLEDESC)values (#{roleName},#{roleDesc})
+    </insert>
+
+    <delete id="delRole" parameterType="string">
+        delete from ROLE where id = #{id}
+    </delete>
+
+    <!--update-->
+    <update id="update" parameterType="role">
+        update ROLE set ROLENAME = #{roleName},ROLEDESC = #{roleDesc} where id = #{id}
+    </update>
+</mapper>
